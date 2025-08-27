@@ -7,4 +7,6 @@ RUN npm i
 
 COPY . .
 
+RUN npm run migrate
+
 CMD ["npm", "run", "dev"]
