@@ -1,0 +1,517 @@
+{
+	"info": {
+		"_postman_id": "d478f773-3aed-4ffd-8ce6-3510e2c92c38",
+		"name": "Backend Skill Test",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "23745423"
+	},
+	"item": [
+		{
+			"name": "Add New User with Bad Payload",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should response 400 status code', () => {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test('should response with correct property and message', () => {\r",
+							"    const responseJson = pm.response.json();\r",
+							"    pm.expect(responseJson).to.be.an('object');\r",
+							"    pm.expect(responseJson.status).to.equal('fail');\r",
+							"    pm.expect(responseJson.message).to.not.equals('');\r",
+							"    pm.expect(responseJson.message).to.not.equals(null);\r",
+							"});\r",
+							"\r",
+							"const repeatRequestUntilDatasetEmpty = () => {\r",
+							"    const badPayloads = pm.environment.get('badPayloads');\r",
+							"\r",
+							"    if(badPayloads && badPayloads.length > 0) {\r",
+							"        pm.execution.setNextRequest('Add New User with Bad Payload')\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"repeatRequestUntilDatasetEmpty();"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let badPayloads = pm.environment.get('badPayloads');\r",
+							"\r",
+							"if (!badPayloads || badPayloads.length === 0) {\r",
+							"    badPayloads = [\r",
+							"        {},\r",
+							"        {email: 'kamaludin@gmail.com', phone: '081234567890', status: true, department: 'sales'},\r",
+							"        {username: 'kamaludin', phone: '081234567890', status: true, department: 'sales'},\r",
+							"        {username: 'kamaludin', email: 'kamaludin@gmail.com', status: true, department: 'sales'},\r",
+							"        {username: 'kamaludin', email: 'kamaludin@gmail.com', phone: '081234567890', department: 'sales'},\r",
+							"        {username: 'kamaludin', email: 'kamaludin@gmail.com', phone: '081234567890', status: true},\r",
+							"        {username: 123, email: 'kamaludin@gmail.com', phone: '081234567890', status: true, department: 'sales'},\r",
+							"        {username: 'kamaludin', email: [], phone: '081234567890', status: true, department: 'sales'},\r",
+							"        {username: 'kamaludin', email: 'kamaludin@gmail.com', phone: 081234567890, status: true, department: 'sales'},\r",
+							"        {username: 'kamaludin', email: 'kamaludin@gmail.com', phone: '081234567890', status: true, department: []},\r",
+							"    ]\r",
+							"}\r",
+							"\r",
+							"const currentBadPayloads = badPayloads.shift();\r",
+							"pm.environment.set(\"currentBadPayloads\", JSON.stringify(currentBadPayloads)); \r",
+							"pm.environment.set(\"badPayloads\", badPayloads); "
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{currentBadPayloads}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Add New User with Valid Payload",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should response 201 status code', () => {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test('should response with correct property and message', () => {\r",
+							"    const responseJson = pm.response.json();\r",
+							"    pm.expect(responseJson).to.be.an('object');\r",
+							"    pm.expect(responseJson.status).to.equal('success');\r",
+							"    pm.expect(responseJson.data).to.be.an('object');\r",
+							"    pm.expect(responseJson.data.addedUser).to.be.an('object');\r",
+							"    pm.expect(responseJson.data.addedUser.id).to.be.a('string');\r",
+							"    pm.expect(responseJson.data.addedUser.username).to.be.a('string');\r",
+							"    pm.expect(responseJson.data.addedUser.email).to.be.a('string');\r",
+							"    pm.expect(responseJson.data.addedUser.phone).to.be.a('string');\r",
+							"    pm.expect(responseJson.data.addedUser.status).to.be.a('boolean');\r",
+							"    pm.expect(responseJson.data.addedUser.department).to.be.a('string');\r",
+							"\r",
+							"    pm.environment.set('userId', responseJson.data.addedUser.id)\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"{{username}}\",\r\n    \"email\": \"{{email}}\",\r\n    \"phone\": \"{{phoneNumber}}\",\r\n    \"status\": true,\r\n    \"department\": \"{{department}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Users",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should response 200 status code', () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('should response with correct property and message', () => {\r",
+							"    const responseJson = pm.response.json();\r",
+							"    pm.expect(responseJson).to.be.an('object');\r",
+							"    pm.expect(responseJson.status).to.equal('success');\r",
+							"    pm.expect(responseJson.data).to.be.an('object');\r",
+							"    pm.expect(responseJson.data.users).to.be.an('array');\r",
+							"    pm.expect(responseJson.data.users).to.length.least(1);\r",
+							"\r",
+							"    const users = responseJson.data.users;\r",
+							"    users.forEach((user) => {\r",
+							"        pm.expect(Object.keys(user)).length(6);\r",
+							"        pm.expect(user.id).to.be.ok;\r",
+							"        pm.expect(user.username).to.be.ok;\r",
+							"        pm.expect(user.email).to.be.ok;\r",
+							"        pm.expect(user.phone).to.be.ok;\r",
+							"        pm.expect(user.status).to.be.ok;\r",
+							"        pm.expect(user.department).to.be.ok;\r",
+							"    })\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/users",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User with Invalid Payload",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let badPayloads = pm.environment.get('badPayloads');\r",
+							"\r",
+							"if (!badPayloads || badPayloads.length === 0) {\r",
+							"    badPayloads = [\r",
+							"        {},\r",
+							"        {email: 'udin@gmail.com', phone: '08120987543', status: true, department: 'hr'},\r",
+							"        {username: 'udin', phone: '08120987543', status: true, department: 'hr'},\r",
+							"        {username: 'udin', email: 'udin@gmail.com', status: true, department: 'hr'},\r",
+							"        {username: 'udin', email: 'udin@gmail.com', phone: '08120987543', department: 'hr'},\r",
+							"        {username: 'udin', email: 'udin@gmail.com', phone: '08120987543', status: true},\r",
+							"        {username: 123, email: 'udin@gmail.com', phone: '08120987543', status: true, department: 'hr'},\r",
+							"        {username: 'udin', email: [], phone: '08120987543', status: true, department: 'hr'},\r",
+							"        {username: 'udin', email: 'udin@gmail.com', phone: 08120987543, status: true, department: 'hr'},\r",
+							"        {username: 'udin', email: 'udin@gmail.com', phone: '08120987543', status: 'true', department: 'hr'},\r",
+							"        {username: 'udin', email: 'udin@gmail.com', phone: '08120987543', status: true, department: []},\r",
+							"    ]\r",
+							"}"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should response 400 status code', () => {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test('should response with correct property and message', () => {\r",
+							"    const responseJson = pm.response.json();\r",
+							"    pm.expect(responseJson).to.be.an('object');\r",
+							"    pm.expect(responseJson.status).to.equal('fail');\r",
+							"    pm.expect(responseJson.message).to.be.a('string');\r",
+							"});\r",
+							"\r",
+							"const repeatRequestUntilDatasetEmpty = () => {\r",
+							"    const badPayloads = pm.environment.get('badPayloads');\r",
+							"\r",
+							"    if (badPayloads && badPayloads.length > 0) {\r",
+							"        pm.execution.setNextRequest('Update User with Invalid Payload');\r",
+							"    }\r",
+							"}\r",
+							"\r",
+							"repeatRequestUntilDatasetEmpty();"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{currentBadPayloads}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/users/{{userId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users",
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User with Invalid User Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should response 404 status code', () => {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"pm.test('should response with correct property and message', () => {\r",
+							"    const responseJson = pm.response.json();\r",
+							"    pm.expect(responseJson).to.be.an('object');\r",
+							"    pm.expect(responseJson.status).to.equal('fail');\r",
+							"    pm.expect(responseJson.message).to.be.a('string');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"udin\",\r\n    \"email\": \"udin@gmail.com\" ,\r\n    \"phone\": \"08120987543\",\r\n    \"status\": true,\r\n    \"department\": \"hr\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/users/xxx",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users",
+						"xxx"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update User with Valid Payload",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should response 200 status code', () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('should response with correct property and message', () => {\r",
+							"    const userId = pm.environment.get('userId')\r",
+							"    const responseJson = pm.response.json();\r",
+							"    pm.expect(responseJson).to.be.an('object');\r",
+							"    pm.expect(responseJson.status).to.equal('success');\r",
+							"    pm.expect(responseJson.message).to.be.a('string');\r",
+							"    pm.expect(responseJson.data.user).to.be.an('object');\r",
+							"    pm.expect(responseJson.data.user.id).to.equal(userId);\r",
+							"    pm.expect(responseJson.data.user.username).to.equal('udin');\r",
+							"    pm.expect(responseJson.data.user.email).to.equal('udin@gmail.com');\r",
+							"    pm.expect(responseJson.data.user.phone).to.equal('08120987543');\r",
+							"    pm.expect(responseJson.data.user.status).to.equal(true);\r",
+							"    pm.expect(responseJson.data.user.department).to.equal('hr');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"udin\",\r\n    \"email\": \"udin@gmail.com\" ,\r\n    \"phone\": \"08120987543\",\r\n    \"status\": true,\r\n    \"department\": \"hr\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:3000/users/{{userId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users",
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User with Invalid User Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should response 404 status code', () => {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"\r",
+							"pm.test('should response with correct property and message', () => {\r",
+							"    const responseJson = pm.response.json();\r",
+							"    pm.expect(responseJson).to.be.an('object');\r",
+							"    pm.expect(responseJson.status).to.equal('fail');\r",
+							"    pm.expect(responseJson.message).to.be.a('string');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/users/xxx",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users",
+						"xxx"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete User with Valid User Id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test('should response 200 status code', () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('should response with correct property and message', () => {\r",
+							"    const responseJson = pm.response.json();\r",
+							"    pm.expect(responseJson).to.be.an('object');\r",
+							"    pm.expect(responseJson.status).to.equal('success');\r",
+							"    pm.expect(responseJson.message).to.be.a('string');\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:3000/users/{{userId}}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "3000",
+					"path": [
+						"users",
+						"{{userId}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
